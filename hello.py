@@ -1,2 +1,6 @@
 print("Hello TEAM MATES")
 print("Welcome to DevOps Practice Session")
+print("This is my first DevOps Practice Session")
+print("I am learning DevOps")
+print("I am enjoying learning DevOps")      
+print("I am excited to learn more about DevOps")
