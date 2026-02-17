@@ -32,3 +32,9 @@ jobs:
       run: |
         echo "Build completed successfully!"
         echo "Pipeline execution successful"
+    
+    - name: Frontend Status
+      run: |
+        echo "Frontend available at: frontend/index.html"
+        echo "Open frontend/index.html in browser to see pipeline status"
+        echo "View PIPELINE_GUIDE.md for detailed documentation"
