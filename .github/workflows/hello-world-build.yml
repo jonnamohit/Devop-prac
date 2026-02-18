@@ -39,3 +39,4 @@ jobs:
         echo "Frontend available at: frontend/index.html"
         echo "Open frontend/index.html in browser to see pipeline status"
         echo "View PIPELINE_GUIDE.md for detailed documentation"
+        
