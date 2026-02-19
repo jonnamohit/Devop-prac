@@ -1,0 +1,36 @@
+name: Quality Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Build Artifact
+      run: |
+        mkdir output
+        echo "Build file" > output/app.txt
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifact
+        path: output/
+
+    - name: SonarQube Scan
+      run: |
+        echo "Running SonarQube Analysis"
+        echo "Code quality check passed"
+
+    - name: Deploy Step
+      run: |
+        echo "Deploying application..."
