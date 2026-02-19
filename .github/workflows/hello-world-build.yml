@@ -2,14 +2,14 @@ name: Hello World Build Pipeline
 
 on:
   push:
-    branches: [ develop, develop ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ develop, develop ]
+    branches: [ main, develop ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+  
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -34,9 +34,16 @@ jobs:
         echo "Build completed successfully!"
         echo "Pipeline execution successful"
     
-    - name: Frontend Status
-      run: |
-        echo "Frontend available at: frontend/index.html"
-        echo "Open frontend/index.html in browser to see pipeline status"
-        echo "View PIPELINE_GUIDE.md for detailed documentation"
+  build2:
+    runs-on: ubuntu-latest
+  
+    steps:
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v4
+      with: 
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+ 
+
 
