@@ -26,3 +26,4 @@ jobs:
             tail -n +1 /tmp/server.log || true
             exit 1
           fi
+

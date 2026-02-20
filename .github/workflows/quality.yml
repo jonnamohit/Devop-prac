@@ -1,3 +1,4 @@
+
 name: Quality Pipeline
 
 on:
@@ -8,29 +9,44 @@ permissions:
   contents: write
 
 jobs:
-  quality:
+  kn:
+    name: kn
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Build Artifact
-      run: |
-        mkdir output
-        echo "Build file" > output/app.txt
+      - name: Build Artifact
+        run: |
+          mkdir output
+          echo "Build file" > output/app.txt
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-artifact
-        path: output/
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: output/
 
-    - name: SonarQube Scan
-      run: |
-        echo "Running SonarQube Analysis"
-        echo "Code quality check passed"
+      - name: Run SonarQube analysis (kn)
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          echo "Running SonarQube scanner for project key: jonnamohit"
+          sudo apt-get update -y
+          sudo apt-get install -y unzip openjdk-11-jdk
+          SCANNER_ZIP=sonar-scanner-cli.zip
+          wget -q -O $SCANNER_ZIP https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+          unzip -q $SCANNER_ZIP -d /tmp
+          SCANNER_DIR=$(find /tmp -maxdepth 1 -type d -name "sonar-scanner-*" | head -n1)
+          export PATH=$SCANNER_DIR/bin:$PATH
+          sonar-scanner \
+            -Dsonar.projectKey=jonnamohit \
+            -Dsonar.sources=frontend \
+            -Dsonar.host.url="${SONAR_HOST_URL}" \
+            -Dsonar.login="${SONAR_TOKEN}"
 
-    - name: Deploy Step
-      run: |
-        echo "Deploying application..."
+      - name: Deploy Step
+        run: |
+          echo "Deploying application..."
