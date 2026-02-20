@@ -7,12 +7,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Print Message
-      run: |
-        echo "Basic pipeline running"
-        echo "Build started at $(date)"
+      - name: Basic run (serve frontend and check)
+        run: |
+          echo "Basic pipeline running"
+          cd frontend || exit 0
+          # start a simple server in background
+          python3 -m http.server 8000 >/tmp/server.log 2>&1 &
+          sleep 1
+          # check homepage status (expect 200)
+          status=$(curl -sS -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/ || true)
+          echo "HTTP status: $status"
+          if [ "$status" != "200" ]; then
+            echo "Homepage did not return 200" >&2
+            tail -n +1 /tmp/server.log || true
+            exit 1
+          fi
