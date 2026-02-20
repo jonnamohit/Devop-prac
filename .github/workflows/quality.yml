@@ -41,11 +41,22 @@ jobs:
           unzip -q $SCANNER_ZIP -d /tmp
           SCANNER_DIR=$(find /tmp -maxdepth 1 -type d -name "sonar-scanner-*" | head -n1)
           export PATH=$SCANNER_DIR/bin:$PATH
-          sonar-scanner \
+          echo "java version:" && java -version || true
+          echo "javac location:" && which javac || true
+          echo "scanner dir: $SCANNER_DIR"
+          echo "scanner bin:" && ls -la "$SCANNER_DIR/bin" || true
+          # run with debug (-X) and capture output to help diagnose failures
+          /bin/sh -lc 'sonar-scanner -X \
             -Dsonar.projectKey=jonnamohit \
             -Dsonar.sources=frontend \
             -Dsonar.host.url="${SONAR_HOST_URL}" \
-            -Dsonar.login="${SONAR_TOKEN}"
+            -Dsonar.login="${SONAR_TOKEN}" 2>&1 | tee /tmp/sonar.log'
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            echo "SonarScanner exited with status $status — last 200 lines of log:" >&2
+            tail -n 200 /tmp/sonar.log || true
+            exit $status
+          fi
 
       - name: Deploy Step
         run: |
